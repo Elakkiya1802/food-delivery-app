@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_HUB = "your-dockerhub-username/food-delivery-app"
+        DOCKER_HUB = "elakkiya18/food-delivery-app"
         AWS_REGION = "ap-south-1"          // change to your AWS region
         ECS_CLUSTER = "FoodAppCluster"
         ECS_SERVICE = "FoodAppService"
@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'elakkiya18', passwordVariable: 'sunshine1802')]) {
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     sh 'docker push $DOCKER_HUB:$BUILD_NUMBER'
                     sh 'docker push $DOCKER_HUB:latest'
