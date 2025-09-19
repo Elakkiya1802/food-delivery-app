@@ -3,9 +3,9 @@ pipeline {
     environment {
         DOCKER_HUB = "your-dockerhub-username/food-delivery-app"
         AWS_REGION = "ap-south-1"          // change to your region
-        ECS_CLUSTER = "FoodAppCluster"
-        ECS_SERVICE = "FoodAppService"
-        TASK_FAMILY = "FoodAppTask"
+        ECS_CLUSTER = "FoodAppCluster"     // your ECS cluster name
+        ECS_SERVICE = "FoodAppService"     // your ECS service name
+        TASK_FAMILY = "FoodAppTask"        // your ECS task definition family name
     }
     stages {
         stage('Checkout') {
@@ -31,16 +31,19 @@ pipeline {
         stage('Update ECS Task Definition') {
             steps {
                 sh '''
+                # Get the current task definition JSON
                 TASK_DEFINITION=$(aws ecs describe-task-definition \
                   --task-definition $TASK_FAMILY \
                   --region $AWS_REGION)
 
+                # Create a new task definition with updated image
                 NEW_DEF=$(echo $TASK_DEFINITION | \
                   jq --arg IMAGE "$DOCKER_HUB:$BUILD_NUMBER" \
                   '.taskDefinition | .containerDefinitions[0].image = $IMAGE | 
                    {family: .family, networkMode: .networkMode, containerDefinitions: .containerDefinitions, 
                    requiresCompatibilities: .requiresCompatibilities, cpu: .cpu, memory: .memory}')
 
+                # Register the new task definition
                 echo $NEW_DEF > new-task-def.json
                 aws ecs register-task-definition --cli-input-json file://new-task-def.json --region $AWS_REGION
                 '''
@@ -49,6 +52,7 @@ pipeline {
         stage('Deploy to ECS Fargate') {
             steps {
                 sh '''
+                # Force service to use the new task definition
                 LATEST_REV=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY --region $AWS_REGION \
                   | jq -r '.taskDefinition.revision')
 
@@ -62,4 +66,3 @@ pipeline {
         }
     }
 }
-
