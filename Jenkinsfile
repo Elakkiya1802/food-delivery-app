@@ -10,7 +10,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/yourusername/your-frontend-repo.git'
+                git 'https://github.com/Elakkiya1802/food-delivery-app.git
+'
             }
         }
         stage('Build Docker Image') {
