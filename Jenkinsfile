@@ -4,8 +4,8 @@ pipeline {
         DOCKER_HUB   = "elakkiya18/food-delivery-app"
         AWS_REGION   = "ap-south-1"      
         ECS_CLUSTER  = "FoodAppCluster"
-        ECS_SERVICE  = "FoodAppService"
-        TASK_FAMILY  = "FoodAppTask"
+        ECS_SERVICE  = "foodappservice"
+        TASK_FAMILY  = "frontend"
     }
     stages {
         stage('Checkout') {
